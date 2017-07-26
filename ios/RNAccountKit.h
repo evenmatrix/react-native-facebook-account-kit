@@ -4,9 +4,12 @@
 
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
+#if __has_include("RCTBridgeModule.h")
 #import "RCTBridgeModule.h"
-#import "RCTBridge.h"
-#import "RCTEventDispatcher.h"
+#else
+#import <React/RCTBridgeModule.h>
+#endif
+
 
 @interface RNAccountKit : NSObject <RCTBridgeModule>
 

@@ -3,10 +3,7 @@
 //
 
 #import "RNAccountKit.h"
-#import "RCTBridge.h"
 #import "RNAccountKitViewController.h"
-#import "RCTRootView.h"
-#import "RCTLog.h"
 
 @implementation RNAccountKit
 {

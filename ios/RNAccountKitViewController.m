@@ -1,8 +1,6 @@
 #import "RNAccountKitViewController.h"
 
 #import <AccountKit/AccountKit.h>
-#import "RCTUtils.h"
-#import "RCTLog.h"
 
 @implementation RNAccountKitViewController
 {
