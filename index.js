@@ -4,11 +4,16 @@ import React, {
 
 import {
   NativeModules,
-  DeviceEventEmitter,
   TouchableOpacity,
-  Text,
-  Platform
 } from 'react-native'
+
+import {
+  assertArray,
+  assertString,
+  assertValidityOfCountryCodes,
+} from './js/utils'
+
+import PropTypes from 'prop-types'
 
 const RNAccountKitNative = NativeModules.RNAccountKit
 
@@ -18,10 +23,12 @@ class RNAccountKit {
     titleType: 'login',
     initialAuthState: '',
     initialEmail: '',
+    initialPhoneCountryPrefix: '',
+    initialPhoneNumber: '',
     facebookNotificationsEnabled: true,
     readPhoneStateEnabled: true,
     receiveSMS: true,
-    theme: {}
+    theme: {},
   }
 
   constructor() {
@@ -29,7 +36,21 @@ class RNAccountKit {
   }
 
   configure(options = {}) {
-    for(key of Object.keys(options)) {
+    assertArray(options.countryBlacklist, 'countryBlacklist');
+    assertArray(options.countryWhitelist, 'countryWhitelist');
+    assertString(options.defaultCountry, 'defaultCountry');
+    assertValidityOfCountryCodes(options);
+
+    // Remove empty arrays. Empty arrays causes app to crash.
+    if (Array.isArray(options.countryBlacklist) && options.countryBlacklist.length === 0) {
+      options.countryBlacklist = undefined;
+    }
+
+    if (Array.isArray(options.countryWhitelist) && options.countryWhitelist.length === 0) {
+      options.countryWhitelist = undefined;
+    }
+
+    for (key of Object.keys(options)) {
       options[key] || delete options[key]
     }
 
@@ -66,10 +87,10 @@ const AccountKit = new RNAccountKit()
 
 export class LoginButton extends Component {
   static propTypes = {
-    type: React.PropTypes.string,
-    onLogin: React.PropTypes.func.isRequired,
-    onError: React.PropTypes.func.isRequired,
-    onCancel: React.PropTypes.func
+    type: PropTypes.string,
+    onLogin: PropTypes.func.isRequired,
+    onError: PropTypes.func.isRequired,
+    onCancel: PropTypes.func
   };
 
   static defaultProps = {
@@ -93,10 +114,6 @@ export class LoginButton extends Component {
       })
   }
 
-  constructor(props) {
-    super(props)
-  }
-
   render() {
     return (
       <TouchableOpacity style={this.props.style} onPress={() => { this.onPress() }}>
@@ -107,11 +124,11 @@ export class LoginButton extends Component {
 }
 
 export class Color {
-  static rgba(r,g,b,a) {
-    return {r:r/255,g:g/255,b:b/255,a}
+  static rgba(r, g, b, a) {
+    return { r: r / 255, g: g / 255, b: b / 255, a }
   }
-  static rgb(r,g,b) {
-    return this.rgba(r,g,b,1);
+  static rgb(r, g, b) {
+    return this.rgba(r, g, b, 1);
   }
   static hex(hex) {
     hex = hex.replace(/^#/, '');
@@ -119,7 +136,7 @@ export class Color {
       hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
     }
     var num = parseInt(hex, 16);
-    return this.rgba(num >> 16, num >> 8 & 255, num & 255,1);
+    return this.rgba(num >> 16, num >> 8 & 255, num & 255, 1);
   }
 }
 
